@@ -36,7 +36,15 @@ public class CalculatePayrollCommandHandler : IRequestHandler<CalculatePayrollCo
 
     public async Task<List<PayrollDto>> Handle(CalculatePayrollCommand request, CancellationToken cancellationToken)
     {
-        var configsQuery = _context.SalaryConfigurations.AsQueryable();
+        // Chỉ tính lương cho nhân viên ĐANG HOẠT ĐỘNG — bỏ người đã nghỉ việc (IsActive=false,
+        // đồng bộ từ EmployeeResignedEvent của HR Core).
+        var activeEmployeeIds = await _context.Employees
+            .Where(e => e.IsActive)
+            .Select(e => e.EmployeeId)
+            .ToListAsync(cancellationToken);
+
+        var configsQuery = _context.SalaryConfigurations
+            .Where(x => activeEmployeeIds.Contains(x.EmployeeId));
         if (request.EmployeeId.HasValue)
             configsQuery = configsQuery.Where(x => x.EmployeeId == request.EmployeeId.Value);
 
