@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRPayroll API Atelier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./test.css?v=2.2">
+</head>
+
+<body>
+    <a class="skip-link" href="#workspace">Skip to workspace</a>
+
+    <main class="page-shell" id="workspace">
+        <header class="masthead" aria-labelledby="page-title">
+            <div class="masthead__rule" aria-hidden="true"><span></span></div>
+            <div class="masthead__grid">
+                <p class="eyebrow">HR Payroll / API Console</p>
+                <h1 id="page-title">TEST N3</h1>
+                <p class="masthead__meta">CQRS / PostgreSQL / Clean Arch</p>
+            </div>
+        </header>
+
+        <section class="status-strip" aria-label="Runtime state">
+            <div>
+                <span class="label">Database</span>
+                <strong>PayrollDB</strong>
+            </div>
+            <div>
+                <span class="label">Base</span>
+                <strong>/api</strong>
+            </div>
+            <div>
+                <span class="label">Status</span>
+                <strong>Online</strong>
+            </div>
+        </section>
+
+        <div class="workspace-grid">
+            <aside class="control-rail" aria-label="Security and state">
+                <section class="module module--inverted" aria-labelledby="auth-title">
+                    <div class="module__heading">
+                        <p class="section-number">01</p>
+                        <h2 id="auth-title">Settings</h2>
+                    </div>
+
+                    <label class="field" for="var-emp-input">
+                        <span>Employee ID</span>
+                        <input type="text" id="var-emp-input" placeholder="Enter Employee UUID">
+                    </label>
+                    <label class="field" for="var-month-input">
+                        <span>Month</span>
+                        <input type="number" id="var-month-input" placeholder="Payroll Month" value="10">
+                    </label>
+                    <label class="field" for="var-year-input">
+                        <span>Year</span>
+                        <input type="number" id="var-year-input" placeholder="Payroll Year" value="2024">
+                    </label>
+                </section>
+
+                <section class="module" aria-labelledby="state-title">
+                    <div class="module__heading">
+                        <p class="section-number">02</p>
+                        <h2 id="state-title">State</h2>
+                    </div>
+                    <dl class="state-list">
+                        <div>
+                            <dt>Base Salary</dt>
+                            <dd id="var-base">-</dd>
+                        </div>
+                        <div>
+                            <dt>Allowances</dt>
+                            <dd id="var-allowances">-</dd>
+                        </div>
+                        <div>
+                            <dt>Deductions</dt>
+                            <dd id="var-deductions">-</dd>
+                        </div>
+                        <div class="state-list__primary">
+                            <dt>Net Salary</dt>
+                            <dd id="var-net">-</dd>
+                        </div>
+                    </dl>
+                </section>
+            </aside>
+
+            <section class="module scenario-board" aria-labelledby="scenario-title">
+                <div class="module__heading module__heading--wide">
+                    <div>
+                        <p class="section-number">03</p>
+                        <h2 id="scenario-title">Scenarios</h2>
+                    </div>
+                    <div class="tabs" role="tablist" aria-label="Scenario views">
+                        <button class="tab active" id="tab-workflow-button" type="button" role="tab" aria-selected="true" aria-controls="tab-workflow" data-tab-target="tab-workflow">
+                            Workflow
+                        </button>
+                        <button class="tab" id="tab-data-button" type="button" role="tab" aria-selected="false" aria-controls="tab-data" data-tab-target="tab-data">
+                            Data
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tab-workflow" class="tab-content active" role="tabpanel" aria-labelledby="tab-workflow-button">
+                    <article class="action-row" id="step1">
+                        <div>
+                            <p class="step-kicker">Step 01</p>
+                            <h3>Salary Config</h3>
+                        </div>
+                        <span class="status-badge" id="status1">Pending</span>
+                        <button class="button button--outline" type="button" data-action="update-config">Save Config</button>
+                    </article>
+
+                    <article class="action-row" id="step2">
+                        <div>
+                            <p class="step-kicker">Step 02</p>
+                            <h3>Get Config</h3>
+                        </div>
+                        <span class="status-badge" id="status2">Pending</span>
+                        <button class="button button--outline" type="button" data-action="get-config">Get Salary Config</button>
+                    </article>
+
+                    <article class="action-row" id="step3">
+                        <div>
+                            <p class="step-kicker">Step 03</p>
+                            <h3>Calculate Payroll</h3>
+                        </div>
+                        <span class="status-badge" id="status3">Pending</span>
+                        <div>
+                            <button class="button button--dark" type="button" data-action="calc-payroll">Call API</button>
+                            <button class="button button--outline" type="button" data-action="sim-event">Simulate Event</button>
+                        </div>
+                    </article>
+                    
+                    <article class="action-row action-row--emphasis" id="step4">
+                        <div>
+                            <p class="step-kicker">Step 04</p>
+                            <h3>Get Payroll List</h3>
+                        </div>
+                        <span class="status-badge" id="status4">Pending</span>
+                        <button class="button button--outline" type="button" data-action="get-payrolls">Get Payroll List</button>
+                    </article>
+                </div>
+
+                <div id="tab-data" class="tab-content" role="tabpanel" aria-labelledby="tab-data-button" hidden>
+                    <section class="operation-block" aria-labelledby="get-title">
+                        <div class="operation-block__heading">
+                            <p class="step-kicker">REPORT</p>
+                            <h3 id="get-title">Dashboard & Statistics</h3>
+                        </div>
+                        <div class="button-grid">
+                            <button class="button button--outline" type="button" data-action="get-dashboard">Get Dashboard</button>
+                        </div>
+                    </section>
+
+                    <section class="operation-block" aria-labelledby="config-title">
+                        <div class="operation-block__heading">
+                            <p class="step-kicker">SETUP</p>
+                            <h3 id="config-title">Config Setup Fields</h3>
+                        </div>
+                        <label class="field" for="configBase">
+                            <span>Base Salary</span>
+                            <input type="number" id="configBase" value="15000000">
+                        </label>
+                        <label class="field" for="configMeal">
+                            <span>Meal Allowance</span>
+                            <input type="number" id="configMeal" value="730000">
+                        </label>
+                        <label class="field" for="configTransport">
+                            <span>Transport</span>
+                            <input type="number" id="configTransport" value="500000">
+                        </label>
+                        <label class="field" for="configInsurance">
+                            <span>Insurance</span>
+                            <input type="number" id="configInsurance" value="1575000">
+                        </label>
+                        <label class="field" for="configOther">
+                            <span>Other Deductions</span>
+                            <input type="number" id="configOther" value="0">
+                        </label>
+                    </section>
+                </div>
+            </section>
+
+            <aside class="module log-module" aria-labelledby="log-title">
+                <div class="module__heading module__heading--wide">
+                    <div>
+                        <p class="section-number">04</p>
+                        <h2 id="log-title">Network Logs</h2>
+                    </div>
+                    <button class="button button--ghost" type="button" data-action="clear-logs">Clear Logs</button>
+                </div>
+                <div class="log-container" id="logger" aria-live="polite">
+                    <p class="empty-log">Awaiting commands.</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="./test.js?v=2.1" defer></script>
+</body>
+
+</html>

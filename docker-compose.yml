@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  hrpayroll.api:
+    image: hrpayroll.api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=payroll.db;Database=PayrollDB;Username=postgres;Password=postgres
+      - RabbitMQ__Host=rabbitmq
+    depends_on:
+      - payroll.db
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  payroll.db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: PayrollDB
+    ports:
+      - "5433:5432"
+    volumes:
+      - payroll_db_data:/var/lib/postgresql/data
+
+volumes:
+  payroll_db_data:

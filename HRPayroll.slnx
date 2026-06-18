@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HRPayroll.API/HRPayroll.API.csproj" />
+  <Project Path="HRPayroll.Application/HRPayroll.Application.csproj" />
+  <Project Path="HRPayroll.Domain/HRPayroll.Domain.csproj" />
+  <Project Path="HRPayroll.Infrastructure/HRPayroll.Infrastructure.csproj" />
+</Solution>
