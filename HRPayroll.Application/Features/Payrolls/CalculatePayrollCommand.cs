@@ -46,7 +46,9 @@ public class CalculatePayrollCommandHandler : IRequestHandler<CalculatePayrollCo
         // Có số liệu chấm công thật khi N2 gửi kèm StandardWorkdays > 0.
         bool hasAttendance = request.StandardWorkdays > 0;
         decimal standardWorkdays = hasAttendance ? request.StandardWorkdays : DefaultStandardWorkdays;
-        decimal actualWorkdays = hasAttendance ? request.ActualWorkdays : standardWorkdays; // tính tay → coi đủ công
+        
+        // FIX LỖI NGHIỆP VỤ: Nếu không có dữ liệu chấm công, công thực tế phải là 0 (không làm không có lương).
+        decimal actualWorkdays = hasAttendance ? request.ActualWorkdays : 0m;
         decimal paidLeaveDays = hasAttendance ? request.PaidLeaveDays : 0m;
         decimal unpaidLeaveDays = hasAttendance ? request.UnpaidLeaveDays : 0m;
         decimal overtimeHours = hasAttendance ? request.OvertimeHours : 0m;
