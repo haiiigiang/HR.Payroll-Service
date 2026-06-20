@@ -30,6 +30,10 @@ public class SalaryConfigsController : ControllerBase
                 return Forbid();
         }
 
+        // Manager KHÔNG được xem cấu hình lương (dữ liệu nhạy cảm) — chỉ Admin/HR và nhân viên xem của chính mình.
+        if (User.IsInRole("Manager") && !User.IsInRole("Admin") && !User.IsInRole("HR"))
+            return Forbid();
+
         var result = await _mediator.Send(new GetSalaryConfigQuery { EmployeeId = employeeId });
         
         if (result == null)

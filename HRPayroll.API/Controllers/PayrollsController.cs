@@ -31,6 +31,10 @@ public class PayrollsController : ControllerBase
             employeeId = selfId;
         }
 
+        // Manager KHÔNG được xem bảng lương (dữ liệu nhạy cảm) — chỉ Admin/HR và nhân viên xem của chính mình.
+        if (User.IsInRole("Manager") && !User.IsInRole("Admin") && !User.IsInRole("HR"))
+            return Forbid();
+
         var result = await _mediator.Send(new GetPayrollsQuery
         {
             Month = month,
@@ -49,6 +53,8 @@ public class PayrollsController : ControllerBase
         return Ok(result);
     }
 
+    // Endpoint demo/test — CHỈ tồn tại khi build Debug, không có ở production (Release).
+#if DEBUG
     [HttpPost("simulate-event")]
     [Authorize(Roles = "Admin,HR")]
     public async Task<IActionResult> SimulateEvent([FromBody] CalculatePayrollCommand command, [FromServices] MassTransit.IPublishEndpoint publishEndpoint)
@@ -66,6 +72,7 @@ public class PayrollsController : ControllerBase
         });
         return Accepted(new { message = "Event published to RabbitMQ. Payroll calculation will run in background." });
     }
+#endif
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Roles = "Admin,HR")]
