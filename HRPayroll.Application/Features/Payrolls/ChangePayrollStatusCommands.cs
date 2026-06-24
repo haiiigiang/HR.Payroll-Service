@@ -19,6 +19,18 @@ public class MarkPayrollPaidCommand : IRequest<PayrollDto>
     public Guid Id { get; set; }
 }
 
+// Thu hồi duyệt: Approved -> Pending
+public class RevertPayrollApprovalCommand : IRequest<PayrollDto>
+{
+    public Guid Id { get; set; }
+}
+
+// Thu hồi chi trả: Paid -> Approved
+public class RevertPayrollPaymentCommand : IRequest<PayrollDto>
+{
+    public Guid Id { get; set; }
+}
+
 public class ApprovePayrollCommandHandler : IRequestHandler<ApprovePayrollCommand, PayrollDto>
 {
     private readonly IHRPayrollDbContext _context;
@@ -63,6 +75,56 @@ public class MarkPayrollPaidCommandHandler : IRequestHandler<MarkPayrollPaidComm
             throw new InvalidOperationException($"Chỉ chi trả được bảng lương đã Approved (hiện tại: {record.Status}).");
 
         record.Status = PayrollStatus.Paid;
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return PayrollMapper.ToDto(record);
+    }
+}
+
+public class RevertPayrollApprovalCommandHandler : IRequestHandler<RevertPayrollApprovalCommand, PayrollDto>
+{
+    private readonly IHRPayrollDbContext _context;
+
+    public RevertPayrollApprovalCommandHandler(IHRPayrollDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<PayrollDto> Handle(RevertPayrollApprovalCommand request, CancellationToken cancellationToken)
+    {
+        var record = await _context.PayrollRecords
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+            ?? throw new KeyNotFoundException($"Không tìm thấy bảng lương {request.Id}.");
+
+        if (record.Status != PayrollStatus.Approved)
+            throw new InvalidOperationException($"Chỉ thu hồi duyệt được bảng lương đã Approved (hiện tại: {record.Status}).");
+
+        record.Status = PayrollStatus.Pending;
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return PayrollMapper.ToDto(record);
+    }
+}
+
+public class RevertPayrollPaymentCommandHandler : IRequestHandler<RevertPayrollPaymentCommand, PayrollDto>
+{
+    private readonly IHRPayrollDbContext _context;
+
+    public RevertPayrollPaymentCommandHandler(IHRPayrollDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<PayrollDto> Handle(RevertPayrollPaymentCommand request, CancellationToken cancellationToken)
+    {
+        var record = await _context.PayrollRecords
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+            ?? throw new KeyNotFoundException($"Không tìm thấy bảng lương {request.Id}.");
+
+        if (record.Status != PayrollStatus.Paid)
+            throw new InvalidOperationException($"Chỉ thu hồi chi trả được bảng lương đã Paid (hiện tại: {record.Status}).");
+
+        record.Status = PayrollStatus.Approved;
         await _context.SaveChangesAsync(cancellationToken);
 
         return PayrollMapper.ToDto(record);

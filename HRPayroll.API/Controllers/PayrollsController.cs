@@ -97,4 +97,30 @@ public class PayrollsController : ControllerBase
         catch (KeyNotFoundException ex) { return NotFound(new { ex.Message }); }
         catch (InvalidOperationException ex) { return BadRequest(new { ex.Message }); }
     }
+
+    // Thu hồi duyệt: Approved -> Pending
+    [HttpPost("{id:guid}/revert-approval")]
+    [Authorize(Roles = "Admin,HR")]
+    public async Task<ActionResult<PayrollDto>> RevertApproval(Guid id)
+    {
+        try
+        {
+            return Ok(await _mediator.Send(new RevertPayrollApprovalCommand { Id = id }));
+        }
+        catch (KeyNotFoundException ex) { return NotFound(new { ex.Message }); }
+        catch (InvalidOperationException ex) { return BadRequest(new { ex.Message }); }
+    }
+
+    // Thu hồi chi trả: Paid -> Approved
+    [HttpPost("{id:guid}/revert-payment")]
+    [Authorize(Roles = "Admin,HR")]
+    public async Task<ActionResult<PayrollDto>> RevertPayment(Guid id)
+    {
+        try
+        {
+            return Ok(await _mediator.Send(new RevertPayrollPaymentCommand { Id = id }));
+        }
+        catch (KeyNotFoundException ex) { return NotFound(new { ex.Message }); }
+        catch (InvalidOperationException ex) { return BadRequest(new { ex.Message }); }
+    }
 }
