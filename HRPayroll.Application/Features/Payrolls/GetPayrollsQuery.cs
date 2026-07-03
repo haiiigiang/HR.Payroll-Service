@@ -42,8 +42,17 @@ public class GetPayrollsQueryHandler : IRequestHandler<GetPayrollsQuery, List<Pa
 
         var records = await query.ToListAsync(cancellationToken);
 
+        // Map tên/mã NV từ read-model bằng MỘT query — frontend không phải gọi N1 để tự join.
+        var employeeIds = records.Select(r => r.EmployeeId).Distinct().ToList();
+        var refs = await _context.Employees.AsNoTracking()
+            .Where(x => employeeIds.Contains(x.EmployeeId))
+            .ToDictionaryAsync(x => x.EmployeeId, cancellationToken);
+
         return records.Select(r => new PayrollDto
         {
+            EmployeeCode = refs.TryGetValue(r.EmployeeId, out var e) ? e.EmployeeCode : null,
+            EmployeeName = refs.TryGetValue(r.EmployeeId, out e) ? e.FullName : null,
+            DepartmentName = refs.TryGetValue(r.EmployeeId, out e) ? e.DepartmentName : null,
             Id = r.Id,
             EmployeeId = r.EmployeeId,
             Month = r.Month,

@@ -22,4 +22,10 @@ public class PayrollDto
 
     public PayrollStatus Status { get; set; }
     public DateTime CalculatedAt { get; set; }
+
+    // Thông tin NV từ read-model EmployeeReference (đồng bộ qua RabbitMQ) —
+    // frontend hiển thị trực tiếp, không cần gọi N1 tải danh sách nhân viên để map tên.
+    public string? EmployeeCode { get; set; }
+    public string? EmployeeName { get; set; }
+    public string? DepartmentName { get; set; }
 }
